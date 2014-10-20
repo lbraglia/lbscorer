@@ -1,8 +1,9 @@
 Package: QScoring
-Title: What the package does (one line)
+Title: Questionnaires scoring
 Version: 0.1
-Authors@R: "First Last <first.last@example.com> [aut, cre]"
-Description: What the package does (one paragraph)
-Depends: R (>= 3.1.1)
-License: What license is it under?
+Authors@R: "Luca Braglia <lbraglia@gmail.com> [aut, cre]"
+Description: Questionnaire scoring
+Depends:
+    R (>= 3.1.1)
+License: GPL-3
 LazyData: true
