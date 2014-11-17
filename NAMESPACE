@@ -2,4 +2,3 @@
 
 export(ASK_p)
 export(stai_Y1)
-export(stai_Y2)

@@ -3,12 +3,15 @@
 \alias{stai_Y1}
 \title{State-trait Anxiety inventory for Adults Scoreing Key (Form Y1)}
 \usage{
-stai_Y1(Q = NULL)
+stai_Y1(Q = NULL, NA.treshold = 3)
 }
 \arguments{
 \item{Q}{a matrix or data.frame of 20 columns (corresponing in a ordered
 way to each, so therefore Q[,1] is the first item of the scale) filled
 by 1 (Not at all) to 4 (Very much so) values}
+
+\item{NA.treshold}{compute the score only if # of missing items is less
+than this value}
 }
 \description{
 State-trait Anxiety inventory for Adults Scoreing Key (Form Y1)
