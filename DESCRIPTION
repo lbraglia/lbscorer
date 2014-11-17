@@ -1,6 +1,6 @@
 Package: QScoring
 Title: Questionnaires scoring
-Version: 0.1
+Version: 0.2
 Authors@R: "Luca Braglia <lbraglia@gmail.com> [aut, cre]"
 Description: Questionnaire scoring
 Depends:
