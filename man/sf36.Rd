@@ -6,9 +6,11 @@
 sf36(X = NULL)
 }
 \arguments{
-\item{X}{a \code{\link{matrix}} or \code{\link{data.frame}} of 12
-columns, containing questionnaire items. In order from left to right: gh1, pf02, pf04, rp2,
-rp3, re2, re3, bp2, mh3, vt2, mh4, sf2.}
+\item{X}{a \code{\link{matrix}} or \code{\link{data.frame}} of 36
+columns, containing questionnaire items. In order from left to right:
+GH1, HT, PF01, PF02, PF03, PF04, PF05, PF06, PF07, PF08, PF09, PF10,
+RP1, RP2, RP3, RP4, RE1, RE2, RE3, SF1, BP1, BP2, VT1, MH1, MH2, MH3,
+VT2, MH4, VT3, MH5, VT4, SF2, GH2, GH3, GH4, GH5.}
 }
 \description{
 SF-36 questionnaire scoring
@@ -17,14 +19,12 @@ SF-36 questionnaire scoring
 This is an R port of SAS algorithm by Apolone and Mosconi found
 \href{http://crc.marionegri.it/qdv/index.php?page=sf36}{here}.
 
-SF-12  is a registered trademark of medical outcomes trust.
+SF-36  is a registered trademark of medical outcomes trust.
 }
 \examples{
-\dontrun{
 ## -------------------------
 ## Algorithm test/validation
 ## -------------------------
-}
 scores <- sf36(sf36sample)
 }
 

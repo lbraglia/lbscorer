@@ -3,7 +3,7 @@
 \name{sf36sample}
 \alias{sf36sample}
 \title{SF-36 sample dataset}
-\format{A data frame with 50 rows and 36 columns (1 per
+\format{A data frame with 10 rows and 36 columns (1 per
 SF-36 items)}
 \source{
 SF-36 italian SAS algorithm available at
@@ -13,7 +13,7 @@ SF-36 italian SAS algorithm available at
 sf36sample
 }
 \description{
-SF-36 sample of 50 questionnaires \code{sf36} testing purposes.
+SF-36 sample of 10 questionnaires for \code{\link{sf36}} testing purposes.
 }
 \keyword{datasets}
 

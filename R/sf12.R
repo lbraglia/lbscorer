@@ -45,11 +45,11 @@ sf12 <- function( X = NULL ) {
   threept <- c("pf02", "pf04")
   fivept <- c("gh1", "bp2", "sf2")
   sixpt <- c("vt2", "mh3", "mh4")
-  Recode <- function(x, Max) replace(x, x < 1L | x > Max, NA)
-  X[, twopt] <- lapply(X[, twopt], Recode, Max = 2)
-  X[, threept] <- lapply(X[, threept], Recode, Max = 3)
-  X[, fivept] <- lapply(X[, fivept], Recode, Max = 5)
-  X[, sixpt] <- lapply(X[, sixpt], Recode, Max = 6)
+  ## outRangeNA is defined in utils.R
+  X[, twopt] <- lapply(X[, twopt], outRangeNA, Max = 2L)
+  X[, threept] <- lapply(X[, threept], outRangeNA, Max = 3L)
+  X[, fivept] <- lapply(X[, fivept], outRangeNA, Max = 5L)
+  X[, sixpt] <- lapply(X[, sixpt], outRangeNA, Max = 6L)
   
   ## 
   ## Step 1b - Reverse scoring
