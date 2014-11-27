@@ -20,6 +20,9 @@ This is an R port of SAS algorithm by Apolone and Mosconi found
 SF-12  is a registered trademark of medical outcomes trust.
 }
 \examples{
+## -------------------------
+## Algorithm test/validation
+## -------------------------
 scores <- sf12(sf12sample)
 ## website data test (printing with many decimals for 10 selected
 ## questionnaires)
