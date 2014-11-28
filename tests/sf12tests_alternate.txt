@@ -1,0 +1,28 @@
+two   <- c(1:2, NA)
+three <- c(1:3, NA)
+five  <- c(1:5, NA)
+six   <- c(1:6, NA)
+
+sf12test <- expand.grid(
+  GH1  = five,
+  PF02 = three,
+  PF04 = three,
+  RP2 = two,
+  RP3 = two,
+  RE2 = two,
+  RE3 = two,
+  BP2 = five,
+  MH3 = six,
+  VT2 = six,
+  MH4 = six,
+  SF2  = five,
+  KEEP.OUT.ATTRS = FALSE
+)
+
+
+
+library(foreign)
+write.foreign(df = sf12testdata,
+              datafile = "sf12testdata.csv",
+              codefile = "sf12testdata.sas",
+              package = "SAS")
