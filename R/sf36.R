@@ -15,7 +15,8 @@
 #' ## -------------------------
 #' ## Algorithm test/validation
 #' ## -------------------------
-#' scores <- sf36(sf36sample)
+#' (scores <- sf36(sf36sample))
+#' lapply(scores, comment)
 #' @export 
 sf36 <- function( X = NULL ) {
 
@@ -103,17 +104,27 @@ sf36 <- function( X = NULL ) {
   X[, rpa] <- lapply(X[, rpa], outRangeNA, Max = 2L)
 
   ## ROLPNUM = N(OF RP1-RP4);
+  X$ROLPNUM <- apply(X[, rpa], 1, function(x) sum(!is.na(x)))
   ## ROLPMEAN = MEAN(OF RP1-RP4);
+  X$ROLPMEAN <- apply(X[, rpa], 1, mean, na.rm = TRUE)
 
   ## DO I = 1 TO 4;
   ##    IF RPA(I) = . THEN RPA(I) = ROLPMEAN;
   ## END;
+  X[, rpa] <- lapply(X[, rpa],
+                     function(x, y) ifelse(!is.na(x), x, y),
+                     y = X$ROLPMEAN)
 
   ## IF ROLPNUM GE 2 THEN RAWRP = SUM(OF RP1-RP4);
+  X$RAWRP <- ifelse(X$ROLPNUM >= 2,
+                    apply(X[,rpa], 1, sum, na.rm = TRUE),
+                    NA)
   ## RP = ((RAWRP - 4)/(8-4)) * 100;
+  X$RP <- with(X, ((RAWRP - 4)/(8-4)) * 100)
   ## LABEL  RP = 'SF-36 ROLE-PHYSICAL (0-100)'
   ##        RAWRP = 'RAW SF-36 ROLE-PHYSICAL';
-
+  comment(X$RP) <- "SF-36 ROLE-PHYSICAL (0-100)"
+  
   ## *******************************************************************
   ## *  THE SF-36 PAIN ITEMS.                                          *
   ## *  Item recoding depends on whether both pain1 and pain2          *
@@ -127,29 +138,23 @@ sf36 <- function( X = NULL ) {
 
   ## IF BP1 < 1 OR BP1 > 6 THEN BP1 = .;
   ## IF BP2 < 1 OR BP2 > 5 THEN BP2 = .;
-
-  ## *  RECODES IF NEITHER BP1 OR BP2 HAS A MISSING VALUE;
-
+  X$BP1 <- outRangeNA(X$BP1, Max = 6L)
+  X$BP2 <- outRangeNA(X$BP2, Max = 5L)
+  
   ## IF BP1 NE . AND BP2 NE . THEN DO;
-
   ##    IF BP1 = 1 THEN RBP1 = 6;
   ##    IF BP1 = 2 THEN RBP1 = 5.4;
   ##    IF BP1 = 3 THEN RBP1 = 4.2;
   ##    IF BP1 = 4 THEN RBP1 = 3.1;
   ##    IF BP1 = 5 THEN RBP1 = 2.2;
   ##    IF BP1 = 6 THEN RBP1 = 1;
-
   ##    IF BP2 = 1  AND BP1 = 1 THEN RBP2 = 6;
   ##    IF BP2 = 1  AND 2 LE BP1 LE 6 THEN RBP2 = 5;
   ##    IF BP2 = 2  AND 1 LE BP1 LE 6 THEN RBP2  = 4;
   ##    IF BP2 = 3  AND 1 LE BP1 LE 6 THEN RBP2  = 3;
   ##    IF BP2 = 4  AND 1 LE BP1 LE 6 THEN RBP2  = 2;
   ##    IF BP2 = 5  AND 1 LE BP1 LE 6 THEN RBP2  = 1;
-
   ## END;
-
-  ## *  RECODES IF BP1 IS NOT MISSING AND BP2 IS MISSING;
-
   ## IF BP1 NE . AND BP2 = . THEN DO;
   ##    IF BP1 = 1 THEN RBP1 = 6;
   ##    IF BP1 = 2 THEN RBP1 = 5.4;
@@ -158,30 +163,31 @@ sf36 <- function( X = NULL ) {
   ##    IF BP1 = 5 THEN RBP1 = 2.2;
   ##    IF BP1 = 6 THEN RBP1 = 1;
   ##    RBP2 = RBP1;
-
   ## END;
-
-  ## *  RECODES IF BP1 IS MISSING AND BP2 IS NOT MISSING;
-
   ## IF BP1 = . AND BP2 NE . THEN DO;
-
   ##    IF BP2 = 1 THEN RBP2 = 6;
   ##    IF BP2 = 2 THEN RBP2 = 4.75;
   ##    IF BP2 = 3 THEN RBP2 = 3.5;
   ##    IF BP2 = 4 THEN RBP2 = 2.25;
   ##    IF BP2 = 5 THEN RBP2 = 1;
   ##    RBP1 = RBP2;
-
   ## END;
 
+  ## for sf36recBP look at utils.R
+  X <- cbind(X, sf36recBP(bp1 = X$BP1, bp2 = X$BP2))
+  
   ## BPNUM = N(BP1,BP2);
-
+  X$BPNUM <- with(X, (!is.na(BP1)) + (!is.na(BP2)))
+    
   ## IF BPNUM GE 1 THEN RAWBP = SUM(RBP1,RBP2);
+  X$RAWBP <- with(X, ifelse(BPNUM >= 1, RBP1 + RBP2 , NA))
+
   ## BP = ((RAWBP - 2)/(12-2)) * 100;
+  X$BP <- with(X, ((RAWBP - 2)/(12-2)) * 100)
 
   ## LABEL  BP = 'SF-36 PAIN INDEX (0-100)'
   ##        RAWBP = 'RAW SF-36 PAIN INDEX';
-
+  comment(X$BP) <- "SF-36 PAIN INDEX (0-100)"
 
   ## *******************************************************************
   ## *  THE SF-36 GENERAL HEALTH PERCEPTIONS INDEX.                    *
@@ -194,35 +200,52 @@ sf36 <- function( X = NULL ) {
   ## *******************************************************************
 
   ## ARRAY GHP(5) GH1-GH5;
-
+  ghp <- paste0("GH", 1:5)
+  
   ## DO I= 1 TO 5;
   ##   IF GHP(I) < 1 OR GHP(I) > 5 THEN GHP(I) = .;
   ## END;
+  X[, ghp] <- lapply(X[, ghp], outRangeNA, Max = 5L)
 
   ## IF GH1 = 1 THEN RGH1 =   5;
   ## IF GH1 = 2 THEN RGH1 = 4.4;
   ## IF GH1 = 3 THEN RGH1 = 3.4;
   ## IF GH1 = 4 THEN RGH1 =   2;
   ## IF GH1 = 5 THEN RGH1 =   1;
-
+  X$RGH1 <- c(5, 4.4, 3.4, 2, 1)[X$GH1]
+  
   ## RGH3 = 6 - GH3;
+  X$RGH3 <- 6 - X$GH3
+  
   ## RGH5 = 6 - GH5;
+  X$RGH5 <- 6 - X$GH5
 
   ## GHNUM = N(GH1,GH2,GH3,GH4,GH5);
+  X$GHNUM <- apply(X[, ghp], 1, function(x) sum(!is.na(x)))
+
   ## GHMEAN = MEAN(RGH1,GH2,RGH3,GH4,RGH5);
+  rgh <- c("RGH1", "GH2", "RGH3", "GH4", "RGH5")
+  X$GHMEAN <- apply(X[, rgh], 1, mean, na.rm = TRUE)
 
   ## ARRAY RGH(5) RGH1 GH2 RGH3 GH4 RGH5;
-
   ## DO I= 1 TO 5;
   ##   IF RGH(I) = . THEN RGH(I) = GHMEAN;
   ## END;
+  X[, rgh] <- lapply(X[, rgh],
+                     function(x, y) ifelse(!is.na(x), x, y),
+                     y = X$GHMEAN)
 
   ## IF GHNUM GE 3  THEN RAWGH = SUM(RGH1,GH2,RGH3,GH4,RGH5);
-  ## GH = ((RAWGH - 5)/(25-5)) * 100;
+  X$RAWGH <- ifelse(X$GHNUM >= 3,
+                    apply(X[,rgh], 1, sum, na.rm = TRUE),
+                    NA)
 
+  ## GH = ((RAWGH - 5)/(25-5)) * 100;
+  X$GH <- with(X, ((RAWGH - 5)/(25-5)) * 100)
+  
   ## LABEL  GH = 'SF-36 GENERAL HEALTH PERCEPTIONS (0-100)'
   ##        RAWGH = 'RAW SF-36 GENERAL HEALTH PERCEPTIONS';
-
+  comment(X$GH) <- "SF-36 GENERAL HEALTH PERCEPTIONS (0-100)"
 
   ## *******************************************************************
   ## *  THE SF-36 VITALITY ITEMS.                                      *
@@ -235,29 +258,44 @@ sf36 <- function( X = NULL ) {
   ## *******************************************************************
 
   ## ARRAY VI(4) VT1-VT4;
-
+  vi <- paste0("VT", 1:4)
+    
   ## DO I = 1 TO 4;
   ##   IF VI(I) < 1 OR VI(I) > 6 THEN VI(I) =.;
   ## END;
+  X[, vi] <- lapply(X[, vi], outRangeNA, Max = 6L)
 
   ## RVT1 = 7-VT1;
   ## RVT2 = 7-VT2;
-
+  X$RVT1 <- with(X, 7 - VT1)
+  X$RVT2 <- with(X, 7 - VT2)
+    
   ## VITNUM = N(VT1,VT2,VT3,VT4);
+  X$VITNUM <- apply(X[, vi], 1, function(x) sum(!is.na(x)))
+
   ## VITMEAN = MEAN(RVT1,RVT2,VT3,VT4);
-
+  rvi <- c("RVT1", "RVT2", "VT3", "VT4")
+  X$VITMEAN <- apply(X[, rvi], 1, mean, na.rm = TRUE)
+  
   ## ARRAY RVI(4) RVT1 RVT2 VT3 VT4;
-
   ## DO I = 1 TO 4;
   ##   IF RVI(I) = . THEN RVI(I) = VITMEAN;
   ## END;
-
+  X[, rvi] <- lapply(X[, rvi],
+                     function(x, y) ifelse(!is.na(x), x, y),
+                     y = X$VITMEAN)
+  
   ## IF VITNUM GE 2 THEN RAWVT= SUM(RVT1,RVT2,VT3,VT4);
-  ## VT = ((RAWVT-4)/(24-4)) * 100;
+  X$RAWVT <- ifelse(X$VITNUM >= 2,
+                    apply(X[,rvi], 1, sum, na.rm = TRUE),
+                    NA)
 
+  ## VT = ((RAWVT-4)/(24-4)) * 100;
+  X$VT <- with(X, ((RAWVT-4)/(24-4)) * 100)
+    
   ## LABEL  VT = 'SF-36 VITALITY (0-100)'
   ##        RAWVT = 'RAW SF-36 VITALITY';
-
+  comment(X$VT) <- 'SF-36 VITALITY (0-100)'
 
   ## ******************************************************************
   ## *  THE SF-36 SOCIAL FUNCTIONING INDEX.                           *
@@ -269,27 +307,39 @@ sf36 <- function( X = NULL ) {
   ## ******************************************************************
 
   ## ARRAY SOC(2) SF1-SF2;
-
+  soc <- paste0("SF", 1:2)
+  
   ## DO I = 1 TO 2;
   ##    IF SOC(I) < 1 OR SOC(I) > 5 THEN SOC(I) = .;
   ## END;
+  X[, soc] <- lapply(X[, soc], outRangeNA, Max = 5L)
 
   ## RSF1 = 6 - SF1;
+  X$RSF1 = with(X, 6 - SF1)
   ## SFNUM = N(SF1,SF2);
+  X$SFNUM <- apply(X[, soc], 1, function(x) sum(!is.na(x)))
   ## SFMEAN = MEAN(RSF1,SF2);
+  rsoc <- c("RSF1","SF2")
+  X$SFMEAN <- apply(X[, rsoc], 1, mean, na.rm = TRUE)
 
   ## ARRAY RSF(2) RSF1 SF2;
-
   ## DO I = 1 TO 2;
   ##   IF RSF(I) = . THEN RSF(I) = SFMEAN;
   ## END;
+  X[, rsoc] <- lapply(X[, rsoc],
+                     function(x, y) ifelse(!is.na(x), x, y),
+                     y = X$SFMEAN)
 
   ## IF SFNUM GE 1 THEN RAWSF = SUM(RSF1,SF2);
+  X$RAWSF <- ifelse(X$SFNUM >= 2,
+                    apply(X[,rsoc], 1, sum, na.rm = TRUE),
+                    NA)
   ## SF = ((RAWSF - 2)/(10-2)) * 100;
-
+  X$SF <- with(X, ((RAWSF - 2)/(10-2)) * 100)
+  
   ## LABEL  SF = 'SF-36 SOCIAL FUNCTIONING (0-100)'
   ##        RAWSF = 'RAW SF-36 SOCIAL FUNCTIONING';
-
+  comment(X$SF) <- 'SF-36 SOCIAL FUNCTIONING (0-100)'
 
   ## ******************************************************************
   ## *  THE SF-36 ROLE-EMOTIONAL INDEX.                               *
@@ -301,24 +351,35 @@ sf36 <- function( X = NULL ) {
   ## ******************************************************************
 
   ## ARRAY RM(3) RE1-RE3;
-
+  RM <- paste0("RE", 1:3)
+    
   ## DO I = 1 TO 3;
   ##    IF RM(I) < 1 OR RM(I) > 2 THEN RM(I) = .;
   ## END;
+  X[, RM] <- lapply(X[, RM], outRangeNA, Max = 2L)
 
   ## ROLMNUM = N(OF RE1-RE3);
+  X$ROLMNUM <- apply(X[, RM], 1, function(x) sum(!is.na(x)))
   ## ROLMMEAN = MEAN(OF RE1-RE3);
+  X$ROLMMEAN <- apply(X[, RM], 1, mean, na.rm = TRUE)
 
   ## DO I = 1 TO 3;
   ##    IF RM(I) = . THEN RM(I) = ROLMMEAN;
   ## END;
+  X[, RM] <- lapply(X[, RM],
+                     function(x, y) ifelse(!is.na(x), x, y),
+                     y = X$ROLMMEAN)
 
   ## IF ROLMNUM GE 2 THEN RAWRE = SUM(OF RE1-RE3);
+  X$RAWRE <- ifelse(X$ROLMNUM >= 2,
+                    apply(X[,RM], 1, sum, na.rm = TRUE),
+                    NA)
   ## RE = ((RAWRE - 3)/(6-3)) * 100;
-
+  X$RE <- with(X, ((RAWRE - 3)/(6-3)) * 100)
+  
   ## LABEL  RE = 'SF-36 ROLE-EMOTIONAL (0-100)'
   ##        RAWRE = 'RAW SF-36 ROLE-EMOTIONAL';
-
+  comment(X$RE) <- 'SF-36 ROLE-EMOTIONAL (0-100)'
 
   ## ******************************************************************
   ## *  THE SF-36 MENTAL HEALTH INDEX.                                *
@@ -331,24 +392,36 @@ sf36 <- function( X = NULL ) {
   ## ******************************************************************
 
   ## ARRAY MHI(5) MH1-MH5;
-
+  mhi <- paste0("MH", 1:5)
   ## DO I = 1 TO 5;
   ##    IF MHI(I) < 1 OR MHI(I) > 6 THEN MHI(I)=.;
   ## END;
+  X[, mhi] <- lapply(X[, mhi], outRangeNA, Max = 6L)
 
   ## RMH3 = 7-MH3;
   ## RMH5 = 7-MH5;
-
+  X$RMH3 = with(X, 7 - MH3)
+  X$RMH5 = with(X, 7 - MH5)
+  
   ## MHNUM=N(MH1,MH2,MH3,MH4,MH5);
+  X$ROLMNUM <- apply(X[, mhi], 1, function(x) sum(!is.na(x)))
+
   ## MHMEAN=MEAN(MH1,MH2,RMH3,MH4,RMH5);
+  rmh <- c("MH1", "MH2", "RMH3", "MH4", "RMH5")
+  X$MHMEAN <- apply(X[, rmh], 1, mean, na.rm = TRUE)
 
   ## ARRAY RMH(5) MH1 MH2 RMH3 MH4 RMH5;
-
   ## DO I = 1 TO 5;
   ##    IF RMH(I) = . THEN RMH(I) = MHMEAN;
   ## END;
+  X[, rmh] <- lapply(X[, rmh],
+                     function(x, y) ifelse(!is.na(x), x, y),
+                     y = X$MHMEAN)
 
   ## IF MHNUM GE 3 THEN RAWMH = SUM(MH1,MH2,RMH3,MH4,RMH5);
+
+  ## TODO here
+  
   ## MH = ((RAWMH-5)/(30-5)) * 100;
 
   ## LABEL  MH = 'SF-36 MENTAL HEALTH INDEX (0-100)'
@@ -375,11 +448,11 @@ sf36 <- function( X = NULL ) {
   ## ******************************************************************
 
   ## ******************************************************************
-  ## *      COMPUTE Z SCORES -- OBSERVED VALUES ARE SAMPLE DATA       *
-  ## *                                                                *
-  ## *      MEAN AND SD IS U.S GENERAL POPULATION                     *
-  ## *      FACTOR ANALYTIC SAMPLE                                    *
-  ## *      N=2393: HAVE ALL EIGHT SCALES                             *
+  ## COMPUTE Z SCORES -- OBSERVED VALUES ARE SAMPLE DATA
+  ##
+  ## MEAN AND SD IS U.S GENERAL POPULATION
+  ## FACTOR ANALYTIC SAMPLE
+  ## N=2393: HAVE ALL EIGHT SCALES                             
   ## ******************************************************************
 
   ## PF_Z=(PF-84.52404)/22.89490;
@@ -392,10 +465,10 @@ sf36 <- function( X = NULL ) {
   ## MH_Z=(MH-74.84212)/18.01189;
 
   ## ******************************************************************
-  ## *     COMPUTE SAMPLE RAW FACTOR SCORES                           *
-  ## *     Z SCORES ARE FROM ABOVE                                    *
-  ## *     SCORING COEFFICIENTS ARE FROM U.S. GENERAL POPULATION      *
-  ## *     FACTOR ANALYTIC SAMPLE N=2393: HAVE ALL EIGHT SCALES       *
+  ## COMPUTE SAMPLE RAW FACTOR SCORES                           
+  ## Z SCORES ARE FROM ABOVE                                    
+  ## SCORING COEFFICIENTS ARE FROM U.S. GENERAL POPULATION      
+  ## FACTOR ANALYTIC SAMPLE N=2393: HAVE ALL EIGHT SCALES       
   ## ******************************************************************
 
   ## praw=(PF_Z * .42402)+(RP_Z * .35119)+(BP_Z * .31754)+
@@ -406,9 +479,9 @@ sf36 <- function( X = NULL ) {
   ##      (SF_Z * .26876)+(MH_Z * .48581)+(RE_Z * .43407)+
   ##      (VT_Z * .23534)+(GH_Z * -.01571);
 
-  ## ******************************************************************
-  ## *     Compute standardized scores                                *
-  ## ******************************************************************
+  ## ****************************
+  ## Compute standardized scores 
+  ## ****************************
 
   ## PCS = (praw*10) + 50;
   ## MCS = (mraw*10) + 50;
@@ -416,13 +489,13 @@ sf36 <- function( X = NULL ) {
   ## label PCS='STANDARDIZED PHYSICAL COMPONENT SCALE-00'
   ##       MCS='STANDARDIZED MENTAL COMPONENT SCALE-00';
 
-
-
+  ## *****
+  ## Exit 
+  ## *****
 
   ## PROC PRINT;VAR PF RP BP GH VT SF RE MH PCS MCS;ENDSAS;
-  return(X[, c("PF"), drop = FALSE])
-  ## ,"RP","BP","GH","VT","SF","RE","MH","PCS","MCS"
-  ## return(X)
+  vars.returned <- c("PF","RP","BP","GH","VT","SF","RE","MH","PCS","MCS")
+  return(X[, names(X) %in% vars.returned, drop = FALSE])
 }
 
 

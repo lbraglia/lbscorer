@@ -23,7 +23,7 @@ SF-12  is a registered trademark of medical outcomes trust.
 ## -------------------------
 ## Algorithm test/validation
 ## -------------------------
-scores <- sf12(sf12sample)
+(scores <- sf12(sf12sample))
 ## website data test (printing with many decimals for 10 selected
 ## questionnaires)
 web <- c(1,2,4,5,11,27,28,31,37,39)
