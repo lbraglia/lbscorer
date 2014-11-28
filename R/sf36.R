@@ -96,7 +96,7 @@ sf36 <- function( X = NULL ) {
   ## *******************************************************************
 
   ## ARRAY RPA(4) RP1-RP4;
-  rpa <- c("RP1","RP2","RP3","RP4")
+  rpa <- paste0("RP", 1:4)
 
   ## DO I = 1 TO 4;
   ##    IF RPA(I) < 1 OR RPA(I) > 2 THEN RPA(I) = .;
@@ -237,7 +237,7 @@ sf36 <- function( X = NULL ) {
 
   ## IF GHNUM GE 3  THEN RAWGH = SUM(RGH1,GH2,RGH3,GH4,RGH5);
   X$RAWGH <- ifelse(X$GHNUM >= 3,
-                    apply(X[,rgh], 1, sum, na.rm = TRUE),
+                    apply(X[, rgh], 1, sum, na.rm = TRUE),
                     NA)
 
   ## GH = ((RAWGH - 5)/(25-5)) * 100;
@@ -287,7 +287,7 @@ sf36 <- function( X = NULL ) {
   
   ## IF VITNUM GE 2 THEN RAWVT= SUM(RVT1,RVT2,VT3,VT4);
   X$RAWVT <- ifelse(X$VITNUM >= 2,
-                    apply(X[,rvi], 1, sum, na.rm = TRUE),
+                    apply(X[, rvi], 1, sum, na.rm = TRUE),
                     NA)
 
   ## VT = ((RAWVT-4)/(24-4)) * 100;
@@ -319,20 +319,20 @@ sf36 <- function( X = NULL ) {
   ## SFNUM = N(SF1,SF2);
   X$SFNUM <- apply(X[, soc], 1, function(x) sum(!is.na(x)))
   ## SFMEAN = MEAN(RSF1,SF2);
-  rsoc <- c("RSF1","SF2")
-  X$SFMEAN <- apply(X[, rsoc], 1, mean, na.rm = TRUE)
+  rsf <- c("RSF1","SF2")
+  X$SFMEAN <- apply(X[, rsf], 1, mean, na.rm = TRUE)
 
   ## ARRAY RSF(2) RSF1 SF2;
   ## DO I = 1 TO 2;
   ##   IF RSF(I) = . THEN RSF(I) = SFMEAN;
   ## END;
-  X[, rsoc] <- lapply(X[, rsoc],
+  X[, rsf] <- lapply(X[, rsf],
                      function(x, y) ifelse(!is.na(x), x, y),
                      y = X$SFMEAN)
 
   ## IF SFNUM GE 1 THEN RAWSF = SUM(RSF1,SF2);
-  X$RAWSF <- ifelse(X$SFNUM >= 2,
-                    apply(X[,rsoc], 1, sum, na.rm = TRUE),
+  X$RAWSF <- ifelse(X$SFNUM >= 1,
+                    apply(X[, rsf], 1, sum, na.rm = TRUE),
                     NA)
   ## SF = ((RAWSF - 2)/(10-2)) * 100;
   X$SF <- with(X, ((RAWSF - 2)/(10-2)) * 100)
@@ -404,7 +404,7 @@ sf36 <- function( X = NULL ) {
   X$RMH5 = with(X, 7 - MH5)
   
   ## MHNUM=N(MH1,MH2,MH3,MH4,MH5);
-  X$ROLMNUM <- apply(X[, mhi], 1, function(x) sum(!is.na(x)))
+  X$MHNUM <- apply(X[, mhi], 1, function(x) sum(!is.na(x)))
 
   ## MHMEAN=MEAN(MH1,MH2,RMH3,MH4,RMH5);
   rmh <- c("MH1", "MH2", "RMH3", "MH4", "RMH5")
@@ -419,14 +419,16 @@ sf36 <- function( X = NULL ) {
                      y = X$MHMEAN)
 
   ## IF MHNUM GE 3 THEN RAWMH = SUM(MH1,MH2,RMH3,MH4,RMH5);
-
-  ## TODO here
+  X$RAWMH <- ifelse(X$MHNUM >= 3,
+                    apply(X[, rmh], 1, sum, na.rm = TRUE),
+                    NA)
   
   ## MH = ((RAWMH-5)/(30-5)) * 100;
-
+  X$MH <- with(X, ((RAWMH-5)/(30-5)) * 100)
+  
   ## LABEL  MH = 'SF-36 MENTAL HEALTH INDEX (0-100)'
   ##        RAWMH = 'RAW SF-36 MENTAL HEALTH INDEX';
-
+  comment(X$MH) <- 'SF-36 MENTAL HEALTH INDEX (0-100)'
 
   ## ******************************************************************
   ## *  THE SF-36 HEALTH TRANSITION ITEM.                             *
@@ -434,9 +436,11 @@ sf36 <- function( X = NULL ) {
   ## ******************************************************************
 
   ## IF HT < 1 OR HT > 5 THEN HT = .;
-
+  X$HT <- outRangeNA(X$HT, Max = 5L)
+  
   ## LABEL  HT='RAW SF-36 HEALTH TRANSITION ITEM';
-
+  comment(X$HT) <- 'RAW SF-36 HEALTH TRANSITION ITEM'
+  
   ## ******************************************************************
   ## ***               STEP 3: SF-36 INDEX CONSTRUCTION             ***
   ## ******************************************************************
@@ -464,6 +468,15 @@ sf36 <- function( X = NULL ) {
   ## RE_Z=(RE-81.29467)/33.02717;
   ## MH_Z=(MH-74.84212)/18.01189;
 
+  X$PF_Z <- with(X, (PF-84.52404)/22.89490 )
+  X$RP_Z <- with(X, (RP-81.19907)/33.79729 )
+  X$BP_Z <- with(X, (BP-75.49196)/23.55879 )
+  X$GH_Z <- with(X, (GH-72.21316)/20.16964 )
+  X$VT_Z <- with(X, (VT-61.05453)/20.86942 )
+  X$SF_Z <- with(X, (SF-83.59753)/22.37642 )
+  X$RE_Z <- with(X, (RE-81.29467)/33.02717 )
+  X$MH_Z <- with(X, (MH-74.84212)/18.01189 )
+   
   ## ******************************************************************
   ## COMPUTE SAMPLE RAW FACTOR SCORES                           
   ## Z SCORES ARE FROM ABOVE                                    
@@ -479,16 +492,29 @@ sf36 <- function( X = NULL ) {
   ##      (SF_Z * .26876)+(MH_Z * .48581)+(RE_Z * .43407)+
   ##      (VT_Z * .23534)+(GH_Z * -.01571);
 
+  X$praw <- with(X,
+                 (PF_Z * .42402)+(RP_Z * .35119)+(BP_Z * .31754) + 
+                 (SF_Z * -.00753)+(MH_Z * -.22069)+(RE_Z * -.19206) +
+                 (VT_Z * .02877)+(GH_Z * .24954))
+
+  X$mraw <- with(X,
+                 (PF_Z * -.22999)+(RP_Z * -.12329)+(BP_Z * -.09731)+
+                 (SF_Z * .26876)+(MH_Z * .48581)+(RE_Z * .43407)+
+                 (VT_Z * .23534)+(GH_Z * -.01571))
+  
   ## ****************************
   ## Compute standardized scores 
   ## ****************************
 
-  ## PCS = (praw*10) + 50;
-  ## MCS = (mraw*10) + 50;
+  X$PCS = (X$praw*10) + 50;
+  X$MCS = (X$mraw*10) + 50;
 
   ## label PCS='STANDARDIZED PHYSICAL COMPONENT SCALE-00'
   ##       MCS='STANDARDIZED MENTAL COMPONENT SCALE-00';
 
+  comment(X$PCS) <- 'STANDARDIZED PHYSICAL COMPONENT SCALE-00'
+  comment(X$MCS) <- 'STANDARDIZED MENTAL COMPONENT SCALE-00'
+  
   ## *****
   ## Exit 
   ## *****

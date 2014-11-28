@@ -7,8 +7,8 @@ sf12(X = NULL)
 }
 \arguments{
 \item{X}{a \code{\link{matrix}} or \code{\link{data.frame}} of 12
-columns, containing questionnaire items. In order from left to right: gh1, pf02, pf04, rp2,
-rp3, re2, re3, bp2, mh3, vt2, mh4, sf2.}
+columns, containing questionnaire items. In order from left to right:
+gh1, pf02, pf04, rp2, rp3, re2, re3, bp2, mh3, vt2, mh4, sf2.}
 }
 \description{
 SF12 questionnaire scoring
