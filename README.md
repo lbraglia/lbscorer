@@ -1,4 +1,4 @@
-QScoring [![Build Status](https://travis-ci.org/lbraglia/QScoring.svg)](https://travis-ci.org/lbraglia/QScoring)
+lbscorer [![Build Status](https://travis-ci.org/lbraglia/lbscorer.svg)](https://travis-ci.org/lbraglia/lbscorer)
 ========
 
-Questionnaires scoring packages for R.
+Miscellaneous scoring functions for R.
