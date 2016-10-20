@@ -1,4 +1,4 @@
-> library(QScoring)
+> library(lbscorer)
 > example(sf36)
 
 sf36> ## -------------------------

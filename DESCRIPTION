@@ -1,9 +1,11 @@
 Package: lbscorer
-Title: Miscellaneous scoring function
-Version: 0.2
-Authors@R: "Luca Braglia <lbraglia@gmail.com> [aut, cre]"
-Description: Miscellaneous scoring functions
+Title: Miscellaneous scoring functions
+Version: 0.3
+Authors@R: person("Luca", "Braglia", email = "lbraglia@gmail.com",
+	   role = c("aut", "cre"))
+Description: Miscellaneous scoring functions.
 Depends:
     R (>= 3.1.1)
 License: GPL-3
 LazyData: true
+RoxygenNote: 5.0.1

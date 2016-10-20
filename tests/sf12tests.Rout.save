@@ -1,4 +1,4 @@
-> library(QScoring)
+> library(lbscorer)
 > example(sf12)
 
 sf12> ## -------------------------
@@ -113,7 +113,7 @@ re3  -0.03  0.80
 mh3  -0.14 -0.85
 mh4   0.04  0.85
 
-sf12> ## Fine: reversed item have reverse sign correlation coefficients
+sf12> ## Fine: reversed item have reverse sign correlation coefficients 
 sf12> 
 sf12> 
 sf12> 

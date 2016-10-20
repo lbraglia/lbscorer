@@ -1,2 +1,2 @@
-library(QScoring)
+library(lbscorer)
 example(sf12)
