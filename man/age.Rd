@@ -14,4 +14,3 @@ age(birth, date)
 \description{
 Calculate age in years
 }
-

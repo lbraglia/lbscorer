@@ -17,4 +17,3 @@ than this value}
 \description{
 State-trait Anxiety inventory for Adults Scoreing Key (Form Y1)
 }
-

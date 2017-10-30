@@ -29,4 +29,3 @@ SF-36  is a registered trademark of medical outcomes trust.
 (scores <- sf36(sf36sample))
 lapply(scores, comment)
 }
-

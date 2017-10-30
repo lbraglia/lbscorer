@@ -17,4 +17,3 @@ sf36sample
 SF-36 sample of 10 questionnaires for \code{\link{sf36}} testing purposes.
 }
 \keyword{datasets}
-

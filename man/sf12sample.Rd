@@ -17,4 +17,3 @@ sf12sample
 SF12 sample of 50 questionnaires \code{sf12} testing purposes.
 }
 \keyword{datasets}
-

@@ -15,4 +15,3 @@ special case (Not applicable). Item ARE reversed.}
 \description{
 Activities Scale for Kids - Performance version (30 items)
 }
-

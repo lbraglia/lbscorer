@@ -35,4 +35,3 @@ bmi(b = 24, categ = TRUE)
 bmi(b = 27, categ = TRUE, labels = TRUE)
 
 }
-

@@ -40,4 +40,3 @@ cors <- cor(db)[var.order, 13:14]
 print(cors, digits = 1)
 ## Fine: reversed item have reverse sign correlation coefficients 
 }
-
