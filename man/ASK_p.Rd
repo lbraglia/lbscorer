@@ -7,10 +7,11 @@
 ASK_p(Q = NULL)
 }
 \arguments{
-\item{Q}{a matrix or data.frame of 30 columns (corresponing, in a ordered
-way to each item respectively, so therefore Q[,1] is the first item of the scale) filled
-by 1 (All of the time at all) to 5 (None of the time) values, with 6 as
-special case (Not applicable). Item ARE reversed.}
+\item{Q}{a matrix or data.frame of 30 columns (corresponing, in a
+ordered way to each item respectively, so therefore Q[,1] is
+the first item of the scale) filled by 1 (All of the time at
+all) to 5 (None of the time) values, with 6 as special case
+(Not applicable). Item ARE reversed.}
 }
 \description{
 Activities Scale for Kids - Performance version (30 items)
