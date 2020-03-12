@@ -4,8 +4,13 @@
 \alias{bmi}
 \title{Calculate Body Mass Index}
 \usage{
-bmi(weight.kg = NULL, height.m = NULL, bmi = NULL, categ = FALSE,
-  labels = FALSE)
+bmi(
+  weight.kg = NULL,
+  height.m = NULL,
+  bmi = NULL,
+  categ = FALSE,
+  labels = FALSE
+)
 }
 \arguments{
 \item{weight.kg}{weight in kg}

@@ -4,8 +4,10 @@
 \name{sf12sample}
 \alias{sf12sample}
 \title{SF12 sample dataset}
-\format{A data frame with 50 rows and 13 columns (1 id columns, the
-other SF12 items)}
+\format{
+A data frame with 50 rows and 13 columns (1 id columns, the
+other SF12 items)
+}
 \source{
 SF12 italian manual at
 \url{http://crc.marionegri.it/qdv/index.php?page=sf12}

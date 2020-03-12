@@ -4,8 +4,10 @@
 \name{sf36sample}
 \alias{sf36sample}
 \title{SF-36 sample dataset}
-\format{A data frame with 10 rows and 36 columns (1 per
-SF-36 items)}
+\format{
+A data frame with 10 rows and 36 columns (1 per
+SF-36 items)
+}
 \source{
 SF-36 italian SAS algorithm available at
 \url{http://crc.marionegri.it/qdv/index.php?page=sf36}
