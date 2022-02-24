@@ -9,3 +9,4 @@ Depends:
 License: GPL-3
 LazyData: true
 RoxygenNote: 7.1.1
+Encoding: UTF-8

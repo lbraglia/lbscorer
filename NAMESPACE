@@ -3,6 +3,7 @@
 export(ASK_p)
 export(age)
 export(bmi)
+export(copm)
 export(sf12)
 export(sf36)
 export(stai_Y1)
