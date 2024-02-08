@@ -8,7 +8,7 @@
 #' VT2, MH4, VT3, MH5, VT4, SF2, GH2, GH3, GH4, GH5.
 #' @note
 #' This is an R port of SAS algorithm by Apolone and Mosconi found
-#' \href{http://crc.marionegri.it/qdv/index.php?page=sf36}{here}.
+#' \href{http://lsi.marionegri.it/qdv/index.php?page=sf36}{here}.
 #' 
 #' SF-36  is a registered trademark of medical outcomes trust.
 #' @examples
