@@ -3,10 +3,21 @@
 #' SF12 questionnaire scoring
 #' @param X a \code{\link{matrix}} or \code{\link{data.frame}} of 12
 #' columns, containing questionnaire items. In order from left to right:
-#' gh1, pf02, pf04, rp2, rp3, re2, re3, bp2, mh3, vt2, mh4, sf2.
+#' GH1 (In generale direbbe che la Sua salute è),
+#' PF02 (Attività di moderato impegno fisico),                                                                       
+#' PF04 (Salire qualche piano di scale),                                                                             
+#' RP2 (Ha reso meno di quanto avrebbe voluto),                                                                     
+#' RP3 (Ha dovuto limitare alcuni tipi di lavoro),                                                                  
+#' RE2 (Ha reso meno di quanto avrebbe voluto),                                                                     
+#' RE3 (Ha avuto un calo di concentrazione sul lavoro),                                                             
+#' BP2 (In che misura il dolore la ha ostacolata nel lavoro che svolge abitualmente),                               
+#' MH3 (Calmo e sereno),                                                                                            
+#' VT2 (Pieno di energia),                                                                                          
+#' MH4 (Scoraggiato e triste),                                                                                      
+#' SF2 (Per quanto tempo la Sua salute fisica o il Suo stato emotivo hanno interferito nelle Sue attività sociali)
 #' @note
 #' This is an R port of SAS algorithm by Apolone and Mosconi found
-#' \href{http://crc.marionegri.it/qdv/index.php?page=sf12}{here}.
+#' \href{https://lsi.marionegri.it/qdv/index.php?page=sf12}{here}.
 #' 
 #' SF-12  is a registered trademark of medical outcomes trust.
 #' @examples
